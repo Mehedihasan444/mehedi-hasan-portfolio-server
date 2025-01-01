@@ -4,7 +4,7 @@ import  { model, Schema } from "mongoose";
 // Define the schema for the Projects section
 const ProjectSchema = new Schema({
   display: { type: Boolean, default: true },
-  images: [{ type: String }],
+  images: [{ type: String,required:true }],
   title: { type: String, required: true },
   shortDescription: { type: String, required: true },
   description: { type: String, required: true },

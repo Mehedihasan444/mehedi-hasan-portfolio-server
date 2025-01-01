@@ -5,6 +5,7 @@ import sendResponse from "../../utils/sendResponse";
 
 const createBlog = catchAsync(async (req, res) => {
     const blog = await Blog.create(req.body);
+    console.log(blog)
 
     sendResponse(res,{
         success: true,

@@ -1,13 +1,17 @@
 
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { ProjectControllers } from './project.controller';
-const router=express.Router();
-
-
+import { upload } from '../../utils/sendImageToCloudinary';
+const router = express.Router();
 
 
 router.get('/', ProjectControllers.getProjects);
-router.post('/', ProjectControllers.createProject)
+router.post('/', upload.array("images", 4),
+    (req: Request, res: Response, next: NextFunction) => {
+        req.body = JSON.parse(req.body.data);
+        next();
+    }
+    , ProjectControllers.createProject)
 router.get('/:id', ProjectControllers.getProject);
 router.put('/:id', ProjectControllers.updateProject);
 router.delete('/:id', ProjectControllers.deleteProject);
@@ -15,4 +19,4 @@ router.delete('/:id', ProjectControllers.deleteProject);
 
 
 
-export const ProjectRoutes=router;
+export const ProjectRoutes = router;
