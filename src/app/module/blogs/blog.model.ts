@@ -1,5 +1,6 @@
 
-import  { model, Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
+
 
 
 // Define the schema for the Posts section
@@ -9,8 +10,8 @@ const BlogSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   tags: [{ type: String }],
-},{
-    timestamps:true
+}, {
+  timestamps: true
 });
 
 // Export the Portfolio model
