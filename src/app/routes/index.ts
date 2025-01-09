@@ -9,10 +9,10 @@ import { SkillRoutes } from '../module/skills/skill.route'
 import { AuthRoutes } from '../module/auth/auth.route'
 const router = Router()
 
-const moduleRoutes=[
+const moduleRoutes = [
     {
-        path:"/auth",
-        route : AuthRoutes
+        path: "/auth",
+        route: AuthRoutes
     },
     // {
     //     path:"/users",
@@ -20,32 +20,32 @@ const moduleRoutes=[
 
     // },
     {
-        path:"/projects",
-        route : ProjectRoutes
+        path: "/projects",
+        route: ProjectRoutes
     },
     {
         path: "/blogs",
         route: BlogRoutes
-    },{
+    }, {
         path: "/skills",
         route: SkillRoutes
 
-    },{
-        path:"/experience",
+    }, {
+        path: "/experience",
         route: ExperienceRoutes
     },
     {
-        path:"/education",
+        path: "/education",
         route: EducationRoutes
-    },{
-        path:"/personal-info",
+    }, {
+        path: "/personal-info",
         route: PersonalInfoRoutes
     }
 ]
 
 
- moduleRoutes.forEach(route=>{
-     router.use(route.path,route.route)
- })
+moduleRoutes.forEach(route => {
+    router.use(route.path, route.route)
+})
 
- export default router
+export default router
