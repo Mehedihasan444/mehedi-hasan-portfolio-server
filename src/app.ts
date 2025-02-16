@@ -25,8 +25,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Additional CORS headers middleware
 app.use((req: Request, res: Response, next) => {
-  res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL);
-  res.header('Access-Control-Allow-Credentials', 'true');
+  const allowedOrigins = [process.env.CLIENT_URL, process.env.DASHBOARD_URL];
+  const origin = req.headers.origin as string;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+
   next();
 });
 app.get("/", (req: Request, res: Response) => {
