@@ -1,6 +1,8 @@
 import { catchAsync } from "../../utils/catchAsync"
 import sendResponse from "../../utils/sendResponse"
 import { Skill } from "./skill.model"
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 
 
 
@@ -27,17 +29,30 @@ sendResponse(res, {
 
 const getSkill = catchAsync(async (req, res) => {
 const skill = await Skill.findById(req.params.id)
+
+    if (!skill) {
+        throw new AppError(httpStatus.NOT_FOUND, "Skill not found");
+    }
+
     sendResponse(res, {
-    statusCode: 404,
-    success: false,
-    message: 'Skill not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Skill fetched successfully',
     data: skill,
     })
 })
 
 
 const updateSkill = catchAsync(async (req, res) => {
-const skill = await Skill.findByIdAndUpdate(req.params.id, req.body)
+const skill = await Skill.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+})
+
+if (!skill) {
+    throw new AppError(httpStatus.NOT_FOUND, "Skill not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -49,6 +64,11 @@ sendResponse(res, {
 
 const deleteSkill = catchAsync(async (req, res) => {
 const skill = await Skill.findByIdAndDelete(req.params.id)
+
+if (!skill) {
+    throw new AppError(httpStatus.NOT_FOUND, "Skill not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,

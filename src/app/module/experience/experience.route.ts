@@ -1,11 +1,12 @@
 
 import express from 'express';
 import { ExperienceControllers } from './experience.controller';
+import { requireAdmin } from '../../middleware/requireAdmin';
 const router=express.Router();
 
 router.get('/',ExperienceControllers.getExperiences);
-router.post('/',ExperienceControllers.createExperience)
+router.post('/', requireAdmin, ExperienceControllers.createExperience)
 router.get('/:id',ExperienceControllers.getExperience);
-router.put('/:id',ExperienceControllers.updateExperience);
-router.delete('/:id',ExperienceControllers.deleteExperience);
+router.put('/:id', requireAdmin, ExperienceControllers.updateExperience);
+router.delete('/:id', requireAdmin, ExperienceControllers.deleteExperience);
 export const ExperienceRoutes=router;

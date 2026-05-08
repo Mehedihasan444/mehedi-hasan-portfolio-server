@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { Blog } from "./blog.model";
 import sendResponse from "../../utils/sendResponse";
+import AppError from "../../error/AppError";
 
 const createBlog = catchAsync(async (req, res) => {
     const blog = await Blog.create(req.body);
@@ -9,7 +10,7 @@ const createBlog = catchAsync(async (req, res) => {
 
     sendResponse(res,{
         success: true,
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         message: 'Blog created successfully',
         data: blog,
 
@@ -32,6 +33,10 @@ const getBlogs = catchAsync(async (req, res) => {
 const getBlog = catchAsync(async (req, res) => {
     const blog = await Blog.findById(req.params.id);
 
+    if (!blog) {
+        throw new AppError(httpStatus.NOT_FOUND, "Blog not found");
+    }
+
     sendResponse(res,{
         success: true,
         statusCode: httpStatus.OK,
@@ -44,7 +49,14 @@ const getBlog = catchAsync(async (req, res) => {
 
 
 const  updateBlog = catchAsync(async (req, res) => {
-    const blog = await Blog.findByIdAndUpdate(req.params.id, req.body)
+    const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+    });
+
+    if (!blog) {
+        throw new AppError(httpStatus.NOT_FOUND, "Blog not found");
+    }
 
     sendResponse(res, {
         success: true,
@@ -56,7 +68,11 @@ const  updateBlog = catchAsync(async (req, res) => {
 
 
 const deleteBlog = catchAsync(async (req, res) => {
-    await Blog.findByIdAndDelete(req.params.id);
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+
+    if (!blog) {
+        throw new AppError(httpStatus.NOT_FOUND, "Blog not found");
+    }
 
     sendResponse(res, {
         success: true,

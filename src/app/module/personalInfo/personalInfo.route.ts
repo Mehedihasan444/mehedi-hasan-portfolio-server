@@ -1,16 +1,17 @@
 
 import express from 'express';
 import { PersonalInfoControllers } from './personalInfo.controller';
+import { requireAdmin } from '../../middleware/requireAdmin';
 
 
 const router = express.Router();
 
 
 router.get('/', PersonalInfoControllers.getPersonalInfos);
-router.post('/', PersonalInfoControllers.createPersonalInfo)
+router.post('/', requireAdmin, PersonalInfoControllers.createPersonalInfo)
 router.get('/:id', PersonalInfoControllers.getPersonalInfo);
-router.put('/:id', PersonalInfoControllers.updatePersonalInfo);
-router.delete('/:id', PersonalInfoControllers.deletePersonalInfo);
+router.put('/:id', requireAdmin, PersonalInfoControllers.updatePersonalInfo);
+router.delete('/:id', requireAdmin, PersonalInfoControllers.deletePersonalInfo);
 
 
 

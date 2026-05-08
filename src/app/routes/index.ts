@@ -7,10 +7,15 @@ import { PersonalInfoRoutes } from '../module/personalInfo/personalInfo.route'
 import { ProjectRoutes } from '../module/projects/project.route'
 import { SkillRoutes } from '../module/skills/skill.route'
 import { AuthRoutes } from '../module/auth/auth.route'
+import { ContactRoutes } from '../module/contact/contact.route'
 const router = Router()
 
 const moduleRoutes = [
+    {  path: "/contact",
+        route: ContactRoutes
+    },
     {
+      
         path: "/auth",
         route: AuthRoutes
     },

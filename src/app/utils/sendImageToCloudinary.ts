@@ -3,6 +3,7 @@ import fs from 'fs';
 import multer from 'multer';
 import config from '../config';
 import path from 'path';
+import os from 'os';
 
 
 cloudinary.config({
@@ -13,36 +14,26 @@ cloudinary.config({
 
 export const sendImageToCloudinary = (
     imageName: string,
-    path: string,
+    filePath: string,
 ): Promise<Record<string, unknown>> => {
     return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(
-            path,
-            { public_id: imageName.trim() },
-            function (error, result) {
-                if (error) {
-                    reject(error);
-                    return;
-                }
-                resolve(result as UploadApiResponse);
-                // delete a file asynchronously
-                fs.unlink(path, (err) => {
+        cloudinary.uploader
+            .upload(filePath, { public_id: imageName.trim() })
+            .then((result) => resolve(result as UploadApiResponse))
+            .catch(reject)
+            .finally(() => {
+                fs.unlink(filePath, (err) => {
                     if (err) {
                         console.log(err);
-                    } else {
-                        console.log('File is deleted.');
                     }
                 });
-            },
-        );
+            });
     });
 };
 
 
 // Ensure uploads directory exists
-const uploadDir = path.join(
-    config.NODE_ENV !== "production" ? "/tmp/uploads" : '/tmp/uploads');
-// config.NODE_ENV !== "production" ? "/tmp/uploads" : process.cwd(), 'uploads');
+const uploadDir = path.join(os.tmpdir(), 'uploads');
 
 try {
     if (!fs.existsSync(uploadDir)) {
@@ -65,4 +56,20 @@ const storage = multer.diskStorage({
     },
 });
 
-export const upload = multer({ storage: storage });
+const allowedMimeTypes = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+]);
+
+export const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 4,
+    },
+    fileFilter: (_req, file, cb) => {
+        cb(null, allowedMimeTypes.has(file.mimetype));
+    },
+});

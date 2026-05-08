@@ -1,7 +1,6 @@
 import config from "../config";
 import { Project } from "../module/projects/project.model";
 import { User } from "../module/user/user.model";
-import bcryptjs from "bcryptjs";
 export const seed = async () => {
   try {
 
@@ -91,6 +90,11 @@ export const seed = async () => {
     //   })
 
     //at first check if the admin exist of not
+    if (!config.admin_email || !config.admin_password) {
+      console.log("Admin seed skipped: missing admin credentials in env");
+      return;
+    }
+
     const admin = await User.findOne({
       email: config.admin_email,
     });
@@ -100,10 +104,7 @@ export const seed = async () => {
       await User.create({
         name: "Mehedi Hasan",
         email: config.admin_email,
-        password: await bcryptjs.hash(
-          config.admin_password as string,
-          Number(config.bcrypt_salt_rounds)
-        )
+        password: config.admin_password,
       });
       console.log("Admin created successfully...");
       console.log("Seeding completed...");

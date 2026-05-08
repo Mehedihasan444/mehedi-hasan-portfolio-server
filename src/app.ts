@@ -6,35 +6,24 @@ import cookieParser from "cookie-parser";
 import notFound from "./app/middleware/notFound";
 
 const app: Application = express();
-// app.use(cors({ origin: [`${process.env.CLIENT_URL}`,`${process.env.DASHBOARD_URL}`], credentials: true, }));
-// CORS configuration
-app.use(
-  cors({
-    origin: [`${process.env.CLIENT_URL}`, `${process.env.DASHBOARD_URL}`],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-  })
+const allowedOrigins = [process.env.CLIENT_URL, process.env.DASHBOARD_URL].filter(
+  (origin): origin is string => Boolean(origin)
 );
-// Handle OPTIONS preflight
-app.options('*', cors());
+const corsOptions = {
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(cookieParser());
 
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Additional CORS headers middleware
-app.use((req: Request, res: Response, next) => {
-  const allowedOrigins = [process.env.CLIENT_URL, process.env.DASHBOARD_URL];
-  const origin = req.headers.origin as string;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-
-  next();
-});
 app.get("/", (req: Request, res: Response) => {
   res.send({
     Message: "Server is running..",

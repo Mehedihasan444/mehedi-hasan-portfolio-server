@@ -28,7 +28,9 @@ async function bootstrap() {
   try {
     await mongoose.connect(config.db_url as string);
     console.log('🛢 Database connected successfully');
-    await seed();
+    if (config.NODE_ENV !== 'production') {
+      await seed();
+    }
     server = app.listen(config.port, () => {
       console.log(`🚀 Application is running on port ${config.port}`);
     });

@@ -1,6 +1,8 @@
 import { catchAsync } from "../../utils/catchAsync"
 import sendResponse from "../../utils/sendResponse"
 import { Experience } from "./experience.model"
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 
 
 
@@ -26,17 +28,29 @@ sendResponse(res, {
 
 const getExperience = catchAsync(async (req, res) => {
 const experience = await Experience.findById(req.params.id)
+    if (!experience) {
+        throw new AppError(httpStatus.NOT_FOUND, "Experience not found");
+    }
+
     sendResponse(res, {
-    statusCode: 404,
-    success: false,
-    message: 'Experience not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Experience fetched successfully',
     data: experience,
     })
 })
 
 
 const updateExperience = catchAsync(async (req, res) => {
-const experience = await Experience.findByIdAndUpdate(req.params.id, req.body)
+const experience = await Experience.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+})
+
+if (!experience) {
+    throw new AppError(httpStatus.NOT_FOUND, "Experience not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -48,6 +62,11 @@ sendResponse(res, {
 
 const deleteExperience = catchAsync(async (req, res) => {
 const experience = await Experience.findByIdAndDelete(req.params.id)
+
+if (!experience) {
+    throw new AppError(httpStatus.NOT_FOUND, "Experience not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,

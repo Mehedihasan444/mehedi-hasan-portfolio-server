@@ -1,6 +1,8 @@
 import { catchAsync } from "../../utils/catchAsync"
 import sendResponse from "../../utils/sendResponse"
 import { PersonalInfo } from "./personalInfo.model"
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 
 
 
@@ -27,17 +29,29 @@ sendResponse(res, {
 
 const getPersonalInfo = catchAsync(async (req, res) => {
 const personalInfo = await PersonalInfo.findById(req.params.id)
+    if (!personalInfo) {
+        throw new AppError(httpStatus.NOT_FOUND, "PersonalInfo not found");
+    }
+
     sendResponse(res, {
-    statusCode: 404,
-    success: false,
-    message: 'PersonalInfo not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'PersonalInfo fetched successfully',
     data: personalInfo,
     })
 })
 
 
 const updatePersonalInfo = catchAsync(async (req, res) => {
-const personalInfo = await PersonalInfo.findByIdAndUpdate(req.params.id, req.body)
+const personalInfo = await PersonalInfo.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+})
+
+if (!personalInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "PersonalInfo not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -49,6 +63,11 @@ sendResponse(res, {
 
 const deletePersonalInfo = catchAsync(async (req, res) => {
 const personalInfo = await PersonalInfo.findByIdAndDelete(req.params.id)
+
+if (!personalInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "PersonalInfo not found");
+}
+
 sendResponse(res, {
     statusCode: 200,
     success: true,

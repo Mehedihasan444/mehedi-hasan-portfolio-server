@@ -20,7 +20,7 @@ export const createToken = (
 export const verifyToken = (
   token: string,
   secret: string
-): JwtPayload | Error => {
+): JwtPayload => {
   try {
     return jwt.verify(token, secret) as JwtPayload;
   } catch (error: any) {

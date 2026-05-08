@@ -11,11 +11,14 @@ const userSchema = new Schema(
         email: {
             type: String,
             required: true,
+            unique: true,
+            lowercase: true,
+            index: true,
         },
         password: {
             type: String,
             required: true,
-            select: 0,
+            select: false,
         },
         profilePhoto: {
             type: String,
@@ -32,6 +35,9 @@ userSchema.pre("save", async function (next) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const user = this; // doc
     // hashing password and save into DB
+    if (!user.isModified("password")) {
+        return next();
+    }
     if (user.password) {
         user.password = await bcryptjs.hash(
             user.password,
